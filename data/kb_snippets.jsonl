@@ -1,0 +1,19 @@
+{"title":"Duplicate Charge Guidance","snippet":"If you see two charges, gather transaction IDs and contact official billing support for refund review.","category":"Billing","source_url":"https://ttlc.intuit.com/community/taxes/discussion/charged-twice/00/3586721"}
+{"title":"Subscription Charged Twice","snippet":"Adding devices or renewing plans can appear as duplicate billing; verify subscription terms and invoice IDs.","category":"Billing","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"title":"Billing Support Escalation","snippet":"Community threads may not process account refunds directly; route users to authenticated support channels.","category":"Billing","source_url":"https://community.norton.com/t/charged-twice/230096"}
+
+{"title":"Reset Email Troubleshooting","snippet":"Check spam/junk and confirm sender domains are allowlisted before retrying password reset.","category":"Account","source_url":"https://support.truecontext.com/hc/en-us/articles/360033275692-Not-Receiving-Password-Reset-Email"}
+{"title":"SSO and Password Reset","snippet":"For SSO-managed users, direct password reset may fail; verify identity provider login path first.","category":"Account","source_url":"https://support.truecontext.com/hc/en-us/articles/360033275692-Not-Receiving-Password-Reset-Email"}
+{"title":"Email Delivery and Region Check","snippet":"Confirm account email and regional portal are correct before concluding reset email delivery failure.","category":"Account","source_url":"https://www.imprintplus.com/not-receiving-your-password-reset-email"}
+
+{"title":"500 Error Capture Checklist","snippet":"Capture timestamp, endpoint, and action sequence when 500 occurs to help reproduce the server issue.","category":"Bug","source_url":"https://github.com/Shopify/cli/issues/4935"}
+{"title":"Post-Upgrade Error Triage","snippet":"If failures begin after upgrade, compare dependency versions and recent config changes first.","category":"Bug","source_url":"https://github.com/nextcloud/notifications/issues/2069"}
+{"title":"Crash After Feature Toggle","snippet":"When crashes start after enabling new settings, test with the feature disabled and collect logs.","category":"Bug","source_url":"https://github.com/open-webui/open-webui/issues/12005"}
+
+{"title":"Dark Mode Request Pattern","snippet":"Common feature ask: dark mode support and automatic theme sync with OS preference.","category":"Feature","source_url":"https://github.com/swagger-api/swagger-ui/issues/5327"}
+{"title":"Theme Automation Request","snippet":"Users often request separate light/dark themes and auto-switch behavior by system setting.","category":"Feature","source_url":"https://github.com/Eugeny/tabby/issues/5561"}
+{"title":"Dark Mode Scope Control","snippet":"Feature requests may include exclusions for sites/apps already using native dark themes.","category":"Feature","source_url":"https://github.com/Midnight-Lizard/Midnight-Lizard/issues/376"}
+
+{"title":"Support Channel Clarification","snippet":"Some forums provide peer guidance only; account-specific actions require authenticated support routes.","category":"Other","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"title":"Account Recovery Preconditions","snippet":"If password reset fails, first verify account existence and registration details.","category":"Other","source_url":"https://www.webnames.ca/help/faq/content/resources/articles/webnames_account/troubleshooting/not_receiving_password_reset_email.htm"}
+{"title":"Reset Notification Delivery Steps","snippet":"Mail filtering and sender reputation can block reset notifications; validate mail security settings.","category":"Other","source_url":"https://support.titanfile.com/hc/en-us/articles/27633143482771-Why-am-I-not-receiving-password-reset-email-notifications"}

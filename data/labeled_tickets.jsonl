@@ -1,0 +1,44 @@
+{"text":"I was billed twice this month for the same tax filing account.","category":"Billing","priority":"High","source_url":"https://ttlc.intuit.com/community/taxes/discussion/charged-twice/00/3586721"}
+{"text":"After adding another device, I was charged again on the same subscription.","category":"Billing","priority":"High","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"text":"I paid for my plan but renewal charged me again; please reverse one payment.","category":"Billing","priority":"High","source_url":"https://ttlc.intuit.com/community/taxes/discussion/charged-twice/00/3586721"}
+{"text":"My account should include multiple seats, but adding a seat triggered another full charge.","category":"Billing","priority":"Medium","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"text":"Please refund the duplicate billing transaction on my card.","category":"Billing","priority":"High","source_url":"https://ttlc.intuit.com/community/taxes/discussion/charged-twice/00/3586721"}
+{"text":"I can see two invoices for one subscription period.","category":"Billing","priority":"Medium","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"text":"The same account was charged twice after a plan update.","category":"Billing","priority":"High","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"text":"We were double-billed and need a correction before close of books.","category":"Billing","priority":"High","source_url":"https://ttlc.intuit.com/community/taxes/discussion/charged-twice/00/3586721"}
+
+{"text":"User cannot log in because password reset email never arrives.","category":"Account","priority":"High","source_url":"https://support.outreach.io/hc/en-us/articles/15650618857499-User-Not-Receiving-Password-Reset-Link-Email"}
+{"text":"I requested password reset but no email was received in inbox or spam.","category":"Account","priority":"Medium","source_url":"https://support.truecontext.com/hc/en-us/articles/360033275692-Not-Receiving-Password-Reset-Email"}
+{"text":"Password reset flow does nothing because our org uses SSO.","category":"Account","priority":"Medium","source_url":"https://support.truecontext.com/hc/en-us/articles/360033275692-Not-Receiving-Password-Reset-Email"}
+{"text":"Reset email is blocked by corporate mail filters and user remains locked out.","category":"Account","priority":"High","source_url":"https://support.titanfile.com/hc/en-us/articles/27633143482771-Why-am-I-not-receiving-password-reset-email-notifications"}
+{"text":"User seat claim failed because password reset link was never delivered.","category":"Account","priority":"High","source_url":"https://support.outreach.io/hc/en-us/articles/15650618857499-User-Not-Receiving-Password-Reset-Link-Email"}
+{"text":"Reset emails are not sent when the account email is not registered.","category":"Account","priority":"Low","source_url":"https://sponsorworks.zendesk.com/hc/en-us/articles/5001234965649-User-is-not-receiving-password-reset-email"}
+{"text":"Account recovery failed due to wrong portal region and no reset email.","category":"Account","priority":"Medium","source_url":"https://www.imprintplus.com/not-receiving-your-password-reset-email"}
+{"text":"Seat might be locked, and user cannot complete password recovery.","category":"Account","priority":"High","source_url":"https://support.outreach.io/hc/en-us/articles/15650618857499-User-Not-Receiving-Password-Reset-Link-Email"}
+
+{"text":"Settings save action on node page returns 500 server error.","category":"Bug","priority":"High","source_url":"https://github.com/pterodactyl/panel/issues/5051"}
+{"text":"Running shopify app dev fails with 500 Internal Server Error.","category":"Bug","priority":"High","source_url":"https://github.com/Shopify/cli/issues/4935"}
+{"text":"Notifications API started returning 500 after major version upgrade.","category":"Bug","priority":"High","source_url":"https://github.com/nextcloud/notifications/issues/2069"}
+{"text":"Weather widget request fails with 500 from server endpoint.","category":"Bug","priority":"Medium","source_url":"https://github.com/ajnart/homarr/issues/2067"}
+{"text":"Enabling memory feature causes app crash and repeated 500 errors.","category":"Bug","priority":"High","source_url":"https://github.com/open-webui/open-webui/issues/12005"}
+{"text":"Webhook test payload returns Axios 500 error in integration setup.","category":"Bug","priority":"Medium","source_url":"https://github.com/verbb/formie/issues/1878"}
+{"text":"Fresh install shows blank page with php 500 on Synology setup.","category":"Bug","priority":"High","source_url":"https://github.com/grocy/grocy/issues/145"}
+{"text":"Connected wallet flow triggers backend 500 when requesting contract getters.","category":"Bug","priority":"High","source_url":"https://github.com/ton-org/ton/issues/89"}
+
+{"text":"Feature request: add dark mode to the API UI.","category":"Feature","priority":"Low","source_url":"https://github.com/swagger-api/swagger-ui/issues/5327"}
+{"text":"Please auto-detect OS theme and switch dark/light mode automatically.","category":"Feature","priority":"Low","source_url":"https://github.com/odoo/odoo/issues/144293"}
+{"text":"Need option to keep original image colors while dark mode is enabled.","category":"Feature","priority":"Medium","source_url":"https://github.com/darkreader/darkreader/issues/6894"}
+{"text":"Dark mode support requested for desktop editor experience.","category":"Feature","priority":"Low","source_url":"https://github.com/ONLYOFFICE/DocumentServer/issues/1008"}
+{"text":"Please sync app theme with system light/dark preference.","category":"Feature","priority":"Low","source_url":"https://github.com/mattermost/mattermost/issues/15975"}
+{"text":"Allow automatic theme switching with separate light and dark themes.","category":"Feature","priority":"Low","source_url":"https://github.com/Eugeny/tabby/issues/5561"}
+{"text":"Add dark mode option for better usability across environments.","category":"Feature","priority":"Low","source_url":"https://github.com/umlet/umlet/issues/566"}
+{"text":"Request to avoid applying extension dark mode on sites already in dark theme.","category":"Feature","priority":"Low","source_url":"https://github.com/Midnight-Lizard/Midnight-Lizard/issues/376"}
+
+{"text":"Community forum cannot process account-specific billing refund requests directly.","category":"Other","priority":"Low","source_url":"https://ttlc.intuit.com/community/taxes/discussion/charged-twice/00/3586721"}
+{"text":"Support article asks users to contact official support channels for payment issues.","category":"Other","priority":"Low","source_url":"https://community.norton.com/t/charged-twice/230096"}
+{"text":"Need help identifying which email is registered before reset can proceed.","category":"Other","priority":"Low","source_url":"https://www.webnames.ca/help/faq/content/resources/articles/webnames_account/troubleshooting/not_receiving_password_reset_email.htm"}
+{"text":"Question about which regional portal to use for account access.","category":"Other","priority":"Low","source_url":"https://www.imprintplus.com/not-receiving-your-password-reset-email"}
+{"text":"Request for escalation path when automated emails are suppressed.","category":"Other","priority":"Medium","source_url":"https://support.outreach.io/hc/en-us/articles/15650618857499-User-Not-Receiving-Password-Reset-Link-Email"}
+{"text":"Asking for immediate contact details for technical support team.","category":"Other","priority":"Low","source_url":"https://ja.admission.org/help/i-am-not-receiving-a-username-or-password-reset-email-what-do-i-do"}
+{"text":"Looking for account onboarding steps when user is missing from active user list.","category":"Other","priority":"Low","source_url":"https://sponsorworks.zendesk.com/hc/en-us/articles/5001234965649-User-is-not-receiving-password-reset-email"}
+{"text":"Need clarification on forum limitations versus official support coverage.","category":"Other","priority":"Low","source_url":"https://community.norton.com/t/charged-twice/230096"}
