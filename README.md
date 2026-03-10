@@ -1,147 +1,120 @@
-# ticket-triage-embeddings
+# ticket-triage
 
-A small, explainable FastAPI app for customer-support triage.
+FastAPI service for explainable support-ticket triage.
 
-It takes free text and returns:
-1. predicted category (`Billing`, `Account`, `Bug`, `Feature`, `Other`)
-2. predicted priority (`Low`, `Medium`, `High`) with short reasoning
-3. top-k similar labeled tickets (transparency)
-4. top-k relevant KB snippets (context retrieval)
-5. recommended next-step checklist
-6. drafted reply
-   - deterministic template by default
-   - optional single-call LLM draft if `OPENAI_API_KEY` exists
+Given a free-form support ticket, the API returns:
 
-## Why this project is intentionally simple
+- predicted category: `Billing`, `Account`, `Bug`, `Feature`, or `Other`
+- match quality: `sufficient_signal` or `insufficient_signal`
+- predicted priority: `Low`, `Medium`, or `High`
+- short priority reasoning
+- nearest labeled tickets used for prediction
+- relevant knowledge-base snippets
+- recommended next-step checklist
+- drafted customer reply
 
-- No database
-- No vector DB
-- Small JSONL fixtures committed to repo
-- In-memory embedding index built at startup
-- Clear functions with explicit names and short control flow
+The system is designed to stay interpretable: predictions are based on nearest-neighbor retrieval over labeled examples, and the response includes supporting examples and KB context.
 
-## Design Decisions
-- **Embeddings + kNN:** chosen for explainability/understandability and fast iteration; predictions can be traced to nearest labeled tickets.
-- **Optional LLM Embeddings** enabled only when key is present for higher-quality embeddings; otherwise uses local transformer processing for embeddings with TF-IDF 
-- **Weighted neighbor voting:** closer matches have more influence than weaker matches.
-- **Shared similarity pipeline:** same vector search powers both category prediction and KB retrieval.
-- **Priority logic:** deterministic cues + neighbor signal for auditable urgency decisions.
-- **Optional LLM drafting:** enabled only when key is present for higher-quality replies; core flow works without it to control cost and keep reliability high.
-- **Scope choice:** avoided heavier trained classifiers to keep the project small, readable, and easy to demo end-to-end.
+## Features
 
-## Data Provenance
+- explainable category prediction using embeddings + kNN
+- deterministic priority scoring with auditable cues
+- retrieval of similar historical tickets
+- retrieval of relevant knowledge-base snippets
+- deterministic reply generation by default
+- optional LLM-based reply drafting when `OPENAI_API_KEY` is set
+- no database or vector store required
+- local JSONL fixtures and in-memory index
 
-- `data/labeled_tickets.jsonl` and `data/kb_snippets.jsonl` use examples adapted from public support threads and issue trackers.
-- Each record includes a `source_url` field for traceability.
-- Text is normalized/paraphrased for consistency and to avoid copying long verbatim content.
+## How it works
 
-## Architecture
+1. Ticket text is embedded into a vector.
+2. The vector is compared against labeled support tickets using cosine similarity.
+3. The top-k nearest tickets are used for weighted category voting.
+4. Priority is assigned using deterministic urgency cues plus nearby ticket signals.
+5. Relevant knowledge-base snippets are retrieved using the same similarity pipeline.
+6. A reply is drafted from retrieved context, either with a deterministic template or a single grounded LLM call.
 
-- `app/main.py`: FastAPI routes + static file serving
-- `app/index.py`: loads JSONL files and builds in-memory vectors
-- `app/embed.py`: embedding abstraction + cosine similarity
-- `app/triage.py`: kNN category voting, priority heuristics, retrieval
-- `app/reply.py`: deterministic reply and optional LLM grounded reply
-- `static/index.html`: single-page Tailwind UI (no React)
-- `tests/test_triage.py`: fast golden tests
-- `scripts/evaluate.py`: tiny benchmark (keyword baseline vs embedding-kNN)
-- `data/demo_tickets.json`: out-of-sample examples used by the UI `Load Example` dropdown
+## Embedding backends
 
-## Architecture Diagram
+The app supports three embedding paths:
 
-### Executive View (Non-Technical)
+1. **OpenAI embeddings** when `OPENAI_API_KEY` is available
+2. **Local sentence-transformer** (`sentence-transformers/all-MiniLM-L6-v2`) when no API key is present
+3. **TF-IDF fallback** if the local model is unavailable
+
+Tests force TF-IDF mode so they remain fast and deterministic.
+
+## Project structure
 
 ```text
-+----------------------------+    +---------------------------+    +----------------------------------+
-| Support agent enters ticket| -> | API triages the request   | -> | Finds similar tickets + KB context|
-+----------------------------+    +---------------------------+    +----------------------------------+
-                                                                  |
-                                                                  v
-                                     +-----------------------------------------+
-                                     | Returns category, priority, next steps, | 
-                                     | drafted reply                           | 
-                                     +-----------------------------------------+
-   
+app/
+  main.py       FastAPI routes and app startup
+  index.py      JSONL loading and in-memory vector index construction
+  embed.py      Embedding abstraction and cosine similarity
+  triage.py     Category prediction, priority logic, and retrieval
+  reply.py      Deterministic reply generation and optional LLM draft
+
+data/
+  labeled_tickets.jsonl
+  kb_snippets.jsonl
+  demo_tickets.json
+
+scripts/
+  evaluate.py   Evaluation script for baseline vs embedding-kNN
+
+static/
+  index.html    Single-page UI
+
+tests/
+  test_triage.py
 ```
 
-### Technical View
+## API
 
-```text
-+-------------------------------------+
-| Browser UI (static/index.html)      |
-+-------------------------------------+
-                  |
-                  | GET /, GET /health, POST /triage, POST /draft_reply
-                  v
-+-------------------------------------+
-| FastAPI (app/main.py)               |
-+-------------------------------------+
-                  |
-                  | startup
-                  v
-+-------------------------------------+        +-------------------------------------+
-| build_index (app/index.py)          | -----> | labeled_tickets.jsonl              |
-+-------------------------------------+        +-------------------------------------+
-                  |
-                  +---------------------------> +-------------------------------------+
-                  |                             | kb_snippets.jsonl                   |
-                  |                             +-------------------------------------+
-                  v
-+-------------------------------------+
-| EmbeddingEngine (app/embed.py)      |
-+-------------------------------------+
-          |                                         |
-          v                                         v
-+---------------------------+             +---------------------------+
-| Labeled vectors           |             | KB vectors                |
-+---------------------------+             +---------------------------+
-          \                                         /
-           \                                       /
-            v                                     v
-          +-----------------------------------------------+
-          | triage_ticket (app/triage.py)                |
-          +-----------------------------------------------+
-                              |
-                              v
-          +-----------------------------------------------+
-          | Triage response JSON                           |
-          | category, priority, confidence, reasoning      |
-          | similar_examples, kb_context, next_steps,      |
-          | drafted_reply                                  |
-          +-----------------------------------------------+
+### `GET /health`
 
-Optional draft reply path:
-FastAPI -> app/reply.py -> (with OPENAI_API_KEY) OpenAI chat completion
-                      -> (without key) deterministic fallback
+Health check.
+
+### `POST /triage`
+
+Request:
+
+```json
+{"text":"I was charged twice today and need a refund","top_k":5}
 ```
 
-Quick read of the flow:
-1. Frontend calls FastAPI endpoints.
-2. On startup, backend loads JSONL data and builds vectors.
-3. `/triage` runs kNN + retrieval and returns explainable JSON.
-4. `/draft_reply` uses LLM only when key exists, otherwise deterministic fallback.
+Response includes:
 
-## How embeddings + kNN works
+- `category`
+- `match_quality`
+- `priority`
+- `confidence`
+- `reasoning`
+- `similar_examples`
+- `kb_context`
+- `next_steps`
+- `drafted_reply`
 
-1. Turn ticket text into a vector (embedding).
-2. Compare that vector with vectors of labeled tickets using cosine similarity.
-3. Pick top-k nearest tickets.
-4. Category is chosen by weighted voting (nearer neighbors get more vote).
-5. Confidence = winning vote share of total positive vote.
-6. Priority comes from deterministic keyword cues, then lightly adjusted by neighbor priorities.
-7. KB snippets are retrieved with the same nearest-neighbor similarity process.
+### `POST /draft_reply`
 
-This is easy to explain because every prediction can show its nearest examples and supporting KB context.
+Request:
 
-Embedding backend behavior:
-- If `OPENAI_API_KEY` is set, the app uses OpenAI embeddings.
-- If no key is set, the app uses a local sentence-transformer model (`sentence-transformers/all-MiniLM-L6-v2`).
-- If the local model is unavailable, it falls back to TF-IDF as a safety net.
+```json
+{"text":"...","kb_top_k":5}
+```
+
+Response:
+
+```json
+{"drafted_reply":"...","tone":"...","citations":[...]}
+```
+
+Uses the LLM path only when `OPENAI_API_KEY` is set.
 
 ## Run locally
 
 ```bash
-cd ticket-triage-embeddings
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -150,56 +123,43 @@ uvicorn app.main:app --reload
 
 Open `http://127.0.0.1:8000`.
 
-## API
-
-- `GET /health`
-- `POST /triage`
-  - input: `{"text":"...","top_k":5}`
-  - output: category, priority, confidence, reasoning, similar examples, kb context, next steps, drafted reply
-- `POST /draft_reply`
-  - input: `{"text":"...","kb_top_k":5}`
-  - output: `{"drafted_reply":"...","tone":"...","citations":[...]}`
-  - requires `OPENAI_API_KEY`
-
-## Test
+## Tests
 
 ```bash
 pytest -q
 ```
 
-Tests force TF-IDF mode so they stay fast and do not require downloading a local model.
-
-## Evaluate
+## Evaluation
 
 ```bash
 python scripts/evaluate.py
 ```
 
-Output includes:
+The evaluation script compares embedding-kNN against a simple keyword baseline and reports:
+
 - train/test sizes
-- overall accuracy for embedding-kNN
-- overall accuracy for keyword baseline
-- per-category accuracy for embedding-kNN
+- overall accuracy
+- per-category accuracy
 
-## DEMO.md (quick demo)
+## Example tickets
 
-Use these exact demo steps:
-1. Start app: `uvicorn app.main:app --reload`
-2. Open UI and click `Load Example` or paste ticket.
-3. Click `Triage` to show category, priority, similar examples, KB snippets, next steps.
-4. If `OPENAI_API_KEY` is set, click `Draft Reply (LLM)`.
-
-Try these two demo tickets:
 - `I was charged twice today and our finance team needs an urgent refund.`
 - `Mobile app crashes every time we upload an image from iOS 18.`
 
-## Notes on LLM usage
+## Design goals
 
-- App works fully without LLM.
-- With key set, `/draft_reply` makes one grounded call using ticket + retrieved snippets.
-- If key is missing, triage still returns deterministic drafted reply based on snippet titles.
+- keep the retrieval and decision path easy to inspect
+- avoid hidden classification logic
+- make predictions traceable to similar historical examples
+- keep the project lightweight enough to run locally without infrastructure dependencies
 
-## Production Scaling Notes
+## Notes
 
-For a step-by-step plan to evolve this prototype into a large-scale production system, see:
-- `docs/SCALING.md`
+- The application works without any LLM dependency.
+- LLM usage is limited to optional reply drafting.
+- Low-signal tickets are explicitly marked with `match_quality="insufficient_signal"` and routed conservatively.
+- Retrieved examples and knowledge-base snippets are included to make outputs easier to inspect and debug.
+
+## Future work
+
+See `docs/SCALING.md` for notes on scaling this prototype toward a production deployment.

@@ -3,7 +3,9 @@ from __future__ import annotations
 """FastAPI entrypoint for triage APIs and demo UI."""
 
 import json
+from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import AsyncIterator
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -34,11 +36,15 @@ DEFAULT_DEMO_TICKETS = [
     "Feature request: please add dark mode and OS theme sync.",
 ]
 
-app = FastAPI(title="Ticket Triage Embeddings", version="0.1.0")
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
 INDEX: TicketIndex | None = None
 DEMO_EXAMPLE_TICKETS: list[str] = []
+
+
+def _require_index() -> TicketIndex:
+    """Return initialized index or raise a service-unavailable error."""
+    if INDEX is None:
+        raise HTTPException(status_code=503, detail="Service not initialized")
+    return INDEX
 
 
 def _load_demo_tickets(path: Path) -> list[str]:
@@ -56,12 +62,17 @@ def _load_demo_tickets(path: Path) -> list[str]:
     return DEFAULT_DEMO_TICKETS
 
 
-@app.on_event("startup")
-def startup_event() -> None:
-    """Build and cache the in-memory index at startup."""
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    """Build and cache runtime state during application startup."""
     global INDEX, DEMO_EXAMPLE_TICKETS
     INDEX = build_index(DATA_DIR)
     DEMO_EXAMPLE_TICKETS = _load_demo_tickets(DEMO_TICKETS_FILE)
+    yield
+
+
+app = FastAPI(title="Ticket Triage", version="0.1.0", lifespan=lifespan)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/", include_in_schema=False)
@@ -73,7 +84,7 @@ def read_home() -> FileResponse:
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     """Return service status and capability flags for UI bootstrapping."""
-    assert INDEX is not None
+    _require_index()
     return HealthResponse(
         status="ok",
         llm_enabled=llm_enabled(),
@@ -84,15 +95,13 @@ def health() -> HealthResponse:
 @app.post("/triage", response_model=TriageResponse)
 def triage(payload: TriageRequest) -> TriageResponse:
     """Run end-to-end triage for one ticket."""
-    assert INDEX is not None
-    return triage_ticket(payload.text, INDEX, top_k=payload.top_k)
+    return triage_ticket(payload.text, _require_index(), top_k=payload.top_k)
 
 
 @app.post("/draft_reply", response_model=DraftReplyResponse)
 def draft_reply(payload: DraftReplyRequest) -> DraftReplyResponse:
     """Generate an optional LLM-backed reply using retrieved context."""
-    assert INDEX is not None
-    triage_result = triage_ticket(payload.text, INDEX, top_k=payload.kb_top_k)
+    triage_result = triage_ticket(payload.text, _require_index(), top_k=payload.kb_top_k)
 
     if not llm_enabled():
         raise HTTPException(status_code=400, detail="OPENAI_API_KEY not set. LLM drafting is unavailable.")

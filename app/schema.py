@@ -34,6 +34,7 @@ class TriageResponse(BaseModel):
     """Complete triage output shown in the UI and API clients."""
 
     category: str
+    match_quality: str
     priority: str
     confidence: float
     reasoning: str
